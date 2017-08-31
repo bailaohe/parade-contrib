@@ -19,6 +19,16 @@ class LocalFile(Connection):
             writer = pd.ExcelWriter(target_file, engine='xlsxwriter')
             df.to_excel(writer, index=False)
             writer.save()
+        elif export_type == 'csv':
+            target_file = os.path.join(target_path, table + '-' + str(datetime.date.today())) + '.csv'
+            if if_exists == 'replace' and os.path.exists(target_file):
+                os.remove(target_file)
+            df.to_csv(target_file, index=False, chunksize=4096)
+        elif export_type == 'pickle':
+            target_file = os.path.join(target_path, table + '-' + str(datetime.date.today())) + '.dat'
+            if if_exists == 'replace' and os.path.exists(target_file):
+                os.remove(target_file)
+            df.to_pickle(target_file)
         else:
             raise NotImplementedError("export type {} is not supported".format(export_type))
 
