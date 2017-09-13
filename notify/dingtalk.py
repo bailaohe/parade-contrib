@@ -45,6 +45,6 @@ class DingTalk(Notify):
 
     def notify_success(self, task, **kwargs):
         title = 'Parade任务执行成功'
-        content = self.TEMPLATE_FAIL.format(title=title, task=task)
+        content = self.TEMPLATE_SUCCESS.format(title=title, task=task)
         self.send_notify(self.target, title, content)
 
