@@ -1,8 +1,8 @@
-from parade.notify import Notify
+from parade.notify import Notifier
 import requests
 
 
-class DingTalk(Notify):
+class DingTalk(Notifier):
     API_GATEWAY = 'https://oapi.dingtalk.com/robot/send?access_token={target}'
     TEMPLATE_SUCCESS = """#### {title}\n
 > 任务：{task}
@@ -13,10 +13,13 @@ class DingTalk(Notify):
 > 原因：{reason}
     """
 
-    def __init__(self, conf):
-        Notify.__init__(self, conf)
-        self.target = conf['target']
-        self.attachment = conf['attachment'] if 'attachment' in conf.to_dict() else None
+    target = None
+    attachment = None
+
+    def initialize(self, context, conf):
+        Notifier.initialize(self, context, conf)
+        self.target = self.conf['target']
+        self.attachment = self.conf['attachment'] if self.conf.has('attachment') else None
 
     @staticmethod
     def send_notify(target, title, content):

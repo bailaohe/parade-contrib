@@ -17,11 +17,8 @@ class Loghub(Connection):
     API_VERSION = '0.6.0'
     USER_AGENT = 'log-python-sdk-v-0.6.1'
 
-    def __init__(self, datasource):
-        self.host = datasource.host
-        self.user = datasource.user
-        self.password = datasource.password
-        Connection.__init__(self, datasource)
+    def initialize(self, context, conf):
+        Connection.initialize(self, context, conf)
 
     def _getGMT(self):
         return datetime.datetime.utcnow().strftime('%a, %d %b %Y %H:%M:%S GMT')
@@ -29,7 +26,7 @@ class Loghub(Connection):
     def build_url(self):
         uri = self.datasource.uri
         if uri is None:
-            uripart = self.datasource.db + "." + self.host
+            uripart = self.datasource.db + "." + self.datasource.host
             if self.datasource.port:
                 uripart += ':' + str(self.datasource.port)
             uri = self.datasource.protocol + '://' + uripart
@@ -130,8 +127,8 @@ class Loghub(Connection):
         headers['Date'] = self._getGMT()
 
         signature = Loghub.get_request_authorization(method, resource,
-                                                     self.password, params, headers)
-        headers['Authorization'] = "LOG " + self.user + ':' + signature.decode()
+                                                     self.datasource.password, params, headers)
+        headers['Authorization'] = "LOG " + self.datasource.user + ':' + signature.decode()
         url = url + resource
         return self._sendRequest(method, url, params, body, headers, respons_body_type)
 
